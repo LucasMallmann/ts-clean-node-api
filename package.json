@@ -1,0 +1,7 @@
+{
+  "name": "DDD-TDD-Node-Mango",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Lucas Mallmann <lucasmallmann76@gmail.com>",
+  "license": "MIT"
+}
