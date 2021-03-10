@@ -24,6 +24,11 @@ export class SignUpController implements Controller {
       if (!isValid) {
         return badRequest(new InvalidParamError('email'))
       }
+
+      return {
+        body: {},
+        statusCode: 200
+      }
     } catch (error) {
       return serverError()
     }
