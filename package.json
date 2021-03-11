@@ -19,7 +19,7 @@
     "lint-staged": "^10.5.4",
     "ts-jest": "^26.5.3",
     "typescript": "^4.2.3"
-  },
+  }, 
   "scripts": {
     "prepare": "husky install",
     "test": "jest --passWithNoTests --silent --noStackTrace --runInBand",
