@@ -1,4 +1,4 @@
-import { Encrypter } from '../../protocols/encrypter'
+import { Encrypter } from './db-add-account-protocols'
 import { DbAddAccount } from './db-add-account'
 
 interface SutTypes {
@@ -56,7 +56,7 @@ describe('DbAddAccount Usecase', () => {
       password: 'valid_password'
     }
 
-    // Just like the dependency threw an exception, I expect that my sut also throws
+    // Just like the dependency threw an exception, I expect that my sut also
     const promiseAccount = sut.add(accountData)
     await expect(promiseAccount).rejects.toThrow()
   })
