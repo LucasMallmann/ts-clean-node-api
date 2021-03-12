@@ -5,10 +5,12 @@ import {
 } from './db-add-account-protocols'
 import { DbAddAccount } from './db-add-account'
 
+const HASHED_PASSWORD_STUB_VALUE = 'hashed_password'
+
 const makeEncrypter = (): Encrypter => {
   class EncrypterStub implements Encrypter {
     async encrypt (password: string): Promise<string> {
-      return await new Promise(resolve => resolve('hashed_password'))
+      return await new Promise(resolve => resolve(HASHED_PASSWORD_STUB_VALUE))
     }
   }
 
@@ -22,7 +24,7 @@ const makeAddAccountRepository = (): AddAccountRepository => {
         id: 'valid_id',
         name: 'Valid Name',
         email: 'valid_email@email.com',
-        password: 'hashed_password'
+        password: HASHED_PASSWORD_STUB_VALUE
       }
 
       return await new Promise(resolve => resolve(fakeAccount))
@@ -101,9 +103,23 @@ describe('DbAddAccount Usecase', () => {
     expect(addSpy).toHaveBeenCalledWith({
       name: 'Valid Name',
       email: 'valid_email@email.com',
-      password: 'hashed_password'
+      password: HASHED_PASSWORD_STUB_VALUE
     })
+  })
 
-    // Just like the dependency threw an exception, I expect that my sut also
+  test('should throw an exception if AddAccountRepository throws', async () => {
+    const { addAccountRepositoryStub, sut } = makeSut()
+
+    jest.spyOn(addAccountRepositoryStub, 'add').mockReturnValueOnce(
+      new Promise((resolve, reject) => reject(new Error()))
+    )
+
+    const accountData = {
+      name: 'Valid Name',
+      email: 'valid_email@email.com',
+      password: 'valid_password'
+    }
+
+    await expect(sut.add(accountData)).rejects.toThrow()
   })
 })
