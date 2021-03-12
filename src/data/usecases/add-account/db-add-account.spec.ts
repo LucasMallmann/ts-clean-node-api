@@ -41,4 +41,23 @@ describe('DbAddAccount Usecase', () => {
 
     expect(encryptSpy).toHaveBeenCalledWith('valid_password')
   })
+
+  test('should throw if Encrypter throws', async () => {
+    const { encrypterStub, sut } = makeSut()
+
+    // Mocking a dependency to throw an exception
+    jest.spyOn(encrypterStub, 'encrypt').mockReturnValueOnce(
+      new Promise((resolve, reject) => reject(new Error()))
+    )
+
+    const accountData = {
+      name: 'Valid Name',
+      email: 'valid_email@email.com',
+      password: 'valid_password'
+    }
+
+    // Just like the dependency threw an exception, I expect that my sut also throws
+    const promiseAccount = sut.add(accountData)
+    await expect(promiseAccount).rejects.toThrow()
+  })
 })
