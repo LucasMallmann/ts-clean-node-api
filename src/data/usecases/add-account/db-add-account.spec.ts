@@ -22,7 +22,7 @@ const makeAddAccountRepository = (): AddAccountRepository => {
     async add (accountData: AddAccountModel): Promise<AccountModel> {
       const fakeAccount = {
         id: 'valid_id',
-        name: 'Valid Name',
+        name: 'valid_name',
         email: 'valid_email@email.com',
         password: HASHED_PASSWORD_STUB_VALUE
       }
@@ -57,7 +57,7 @@ describe('DbAddAccount Usecase', () => {
     const encryptSpy = jest.spyOn(encrypterStub, 'encrypt')
 
     const accountData = {
-      name: 'Valid Name',
+      name: 'valid_name',
       email: 'valid_email@email.com',
       password: 'valid_password'
     }
@@ -76,7 +76,7 @@ describe('DbAddAccount Usecase', () => {
     )
 
     const accountData = {
-      name: 'Valid Name',
+      name: 'valid_name',
       email: 'valid_email@email.com',
       password: 'valid_password'
     }
@@ -93,7 +93,7 @@ describe('DbAddAccount Usecase', () => {
     const addSpy = jest.spyOn(addAccountRepositoryStub, 'add')
 
     const accountData = {
-      name: 'Valid Name',
+      name: 'valid_name',
       email: 'valid_email@email.com',
       password: 'valid_password'
     }
@@ -101,7 +101,7 @@ describe('DbAddAccount Usecase', () => {
     await sut.add(accountData)
 
     expect(addSpy).toHaveBeenCalledWith({
-      name: 'Valid Name',
+      name: 'valid_name',
       email: 'valid_email@email.com',
       password: HASHED_PASSWORD_STUB_VALUE
     })
@@ -115,11 +115,30 @@ describe('DbAddAccount Usecase', () => {
     )
 
     const accountData = {
-      name: 'Valid Name',
+      name: 'valid_name',
       email: 'valid_email@email.com',
       password: 'valid_password'
     }
 
     await expect(sut.add(accountData)).rejects.toThrow()
+  })
+
+  test('should return an account on success', async () => {
+    const { sut } = makeSut()
+
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email@email.com',
+      password: 'valid_password'
+    }
+
+    const account = await sut.add(accountData)
+
+    expect(account).toEqual({
+      id: 'valid_id',
+      name: 'valid_name',
+      email: 'valid_email@email.com',
+      password: 'hashed_password'
+    })
   })
 })
