@@ -8,8 +8,8 @@ export class DbAuthentication implements Authentication {
     this.loadAccountByRepository = loadAccountByRepository
   }
 
-  async auth (authenticationParams: AuthenticationParams): Promise<string> {
+  async auth (authenticationParams: AuthenticationParams): Promise<string | null> {
     await this.loadAccountByRepository.auth(authenticationParams)
-    return 'token'
+    return null
   }
 }
