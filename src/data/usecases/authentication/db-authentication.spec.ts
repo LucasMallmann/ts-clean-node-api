@@ -10,7 +10,7 @@ import { AccountModel } from '../add-account/db-add-account-protocols'
 
 const makeLoadAccountByEmailRepository = (): LoadAccountByEmailRepository => {
   class LoadAccountByEmailRepositoryStub implements LoadAccountByEmailRepository {
-    async loadByEmail (authParams: AuthenticationParams): Promise<AccountModel> {
+    async loadByEmail (email: string): Promise<AccountModel> {
       const account = makeFakeAccount()
       return await new Promise(resolve => resolve(account))
     }
@@ -97,7 +97,7 @@ describe('Db Authentication UseCase', () => {
     const authenticationModel = makeFakeAuthenticationParams()
     const loadSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
     await sut.auth(authenticationModel)
-    expect(loadSpy).toHaveBeenLastCalledWith(authenticationModel)
+    expect(loadSpy).toHaveBeenLastCalledWith(authenticationModel.email)
   })
 
   test('should throw if LoadAccountByEmailRepository throws', async () => {
