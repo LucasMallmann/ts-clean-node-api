@@ -9,6 +9,7 @@ import {
 } from './signup-controller-protocols'
 import { HttpRequest } from '../../protocols'
 import { badRequest } from '../../helpers/http/http-helper'
+import { DuplicatedEmailError } from '../../../domain/errors/account/duplicated-email-error'
 
 const makeAddAccount = (): AddAccount => {
   class AddAccountStub implements AddAccount {
@@ -132,5 +133,15 @@ describe('SignUp Controller', () => {
     }
     const httpResponse = await sut.handle(httpRequest)
     expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
+  })
+
+  test('should return 400 if AddAccount throws ErrorDuplicatedEmail', async () => {
+    const { sut, addAccountStub } = makeSut()
+    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(async () => {
+      return await new Promise((resolve, reject) => reject(new DuplicatedEmailError()))
+    })
+    const httpResponse = await sut.handle(makeFakeRequest())
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new DuplicatedEmailError())
   })
 })

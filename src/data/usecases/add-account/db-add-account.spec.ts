@@ -7,6 +7,7 @@ import {
 } from './db-add-account-protocols'
 
 import { DbAddAccount } from './db-add-account'
+import { DuplicatedEmailError } from '../../../domain/errors/account/duplicated-email-error'
 
 const HASHED_PASSWORD_STUB_VALUE = 'hashed_password'
 
@@ -40,13 +41,7 @@ const makeAddAccountRepository = (): AddAccountRepository => {
 const makeLoadAccountByEmailRepository = (): LoadAccountByEmailRepository => {
   class LoadAccountByEmailRepositoryStub implements LoadAccountByEmailRepository {
     async loadByEmail (email: string): Promise<AccountModel> {
-      const account = {
-        id: 'any_id',
-        name: 'any_name',
-        email: 'email@email.com',
-        password: 'hashed_password'
-      }
-      return await new Promise(resolve => resolve(account))
+      return await new Promise(resolve => resolve(null as unknown as AccountModel))
     }
   }
 
@@ -181,6 +176,27 @@ describe('DbAddAccount Usecase', () => {
     }
 
     await expect(sut.add(accountData)).rejects.toThrow()
+  })
+
+  test('should throw an exception if account email is duplicated', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email@email.com',
+      password: 'valid_password'
+    }
+
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(
+      new Promise(resolve => resolve({
+        id: 'any_id',
+        name: 'any_name',
+        email: 'email@email.com',
+        password: 'hashed_password'
+      }))
+    )
+    const accountPromise = sut.add(accountData)
+    await expect(accountPromise).rejects.toThrow()
+    await expect(accountPromise).rejects.toBeInstanceOf(DuplicatedEmailError)
   })
 
   test('should return an account on success', async () => {
