@@ -6,6 +6,6 @@
   "rules": {
     "@typescript-eslint/strict-boolean-expressions": "off",
     "@typescript-eslint/no-invalid-void-type": "off",
-    "consistent-type-assertions": "off"
+    "@typescript-eslint/no-unnecessary-type-assertion": "off"
   }
 }
