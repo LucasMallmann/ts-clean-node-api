@@ -1,4 +1,4 @@
-import { DbAuthentication } from './db-authentication.'
+import { DbAuthentication } from './db-authentication'
 import {
   AuthenticationParams,
   HashComparer,

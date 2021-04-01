@@ -1,4 +1,4 @@
-import { DbAuthentication } from '../../../data/usecases/authentication/db-authentication.'
+import { DbAuthentication } from '../../../data/usecases/authentication/db-authentication'
 import { AccountMongoRepository } from '../../../infra/db/mongodb/account/account-mongo-repository'
 import { LogMongoRepository } from '../../../infra/db/mongodb/log/log-mongo-repository'
 import { LoginController } from '../../../presentation/controllers/login/login-controller'
