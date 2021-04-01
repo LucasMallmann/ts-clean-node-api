@@ -1,3 +1,4 @@
+import { DuplicatedEmailError } from '../../../domain/errors/account/duplicated-email-error'
 import {
   AddAccount,
   AddAccountModel,
@@ -16,7 +17,11 @@ export class DbAddAccount implements AddAccount {
   }
 
   async add (accountData: AddAccountModel): Promise<AccountModel> {
-    await this.loadAccountByEmailRepository.loadByEmail(accountData.email)
+    const existingAccount = await this.loadAccountByEmailRepository.loadByEmail(accountData.email)
+
+    if (existingAccount) {
+      throw new DuplicatedEmailError()
+    }
 
     const hashedPassword = await this.hasher.hash(accountData.password)
 

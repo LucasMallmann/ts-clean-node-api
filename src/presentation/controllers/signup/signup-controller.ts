@@ -1,3 +1,4 @@
+import { DuplicatedEmailError } from '../../../domain/errors/account/duplicated-email-error'
 import { badRequest, serverError, ok } from '../../helpers/http/http-helper'
 import {
   Controller,
@@ -29,6 +30,10 @@ export class SignUpController implements Controller {
 
       return ok(account)
     } catch (error) {
+      if (error instanceof DuplicatedEmailError) {
+        return badRequest(error)
+      }
+
       return serverError(error)
     }
   }
