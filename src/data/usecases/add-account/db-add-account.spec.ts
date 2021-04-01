@@ -1,8 +1,11 @@
 import {
   Hasher,
   AddAccountModel,
-  AccountModel, AddAccountRepository
+  AccountModel,
+  AddAccountRepository,
+  LoadAccountByEmailRepository
 } from './db-add-account-protocols'
+
 import { DbAddAccount } from './db-add-account'
 
 const HASHED_PASSWORD_STUB_VALUE = 'hashed_password'
@@ -34,19 +37,44 @@ const makeAddAccountRepository = (): AddAccountRepository => {
   return new AddAccountRepositoryStub()
 }
 
+const makeLoadAccountByEmailRepository = (): LoadAccountByEmailRepository => {
+  class LoadAccountByEmailRepositoryStub implements LoadAccountByEmailRepository {
+    async loadByEmail (email: string): Promise<AccountModel> {
+      const account = {
+        id: 'any_id',
+        name: 'any_name',
+        email: 'email@email.com',
+        password: 'hashed_password'
+      }
+      return await new Promise(resolve => resolve(account))
+    }
+  }
+
+  return new LoadAccountByEmailRepositoryStub()
+}
+
 interface SutTypes {
   sut: DbAddAccount
   hasherStub: Hasher
   addAccountRepositoryStub: AddAccountRepository
+  loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository
 }
 
 const makeSut = (): SutTypes => {
   const hasherStub = makeHasher()
   const addAccountRepositoryStub = makeAddAccountRepository()
-  const sut = new DbAddAccount(hasherStub, addAccountRepositoryStub)
+  const loadAccountByEmailRepositoryStub = makeLoadAccountByEmailRepository()
+  const sut = new DbAddAccount(
+    hasherStub,
+    addAccountRepositoryStub,
+    loadAccountByEmailRepositoryStub
+  )
 
   return {
-    sut, hasherStub, addAccountRepositoryStub
+    sut,
+    hasherStub,
+    addAccountRepositoryStub,
+    loadAccountByEmailRepositoryStub
   }
 }
 
@@ -121,6 +149,22 @@ describe('DbAddAccount Usecase', () => {
     }
 
     await expect(sut.add(accountData)).rejects.toThrow()
+  })
+
+  test('should call LoadAccountRepository with correct email', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+
+    const loadEmailSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
+
+    const accountData = {
+      name: 'any_name',
+      email: 'email@email.com',
+      password: 'hashed_password'
+    }
+
+    await sut.add(accountData)
+
+    expect(loadEmailSpy).toHaveBeenCalledWith(accountData.email)
   })
 
   test('should return an account on success', async () => {
