@@ -8,7 +8,7 @@ import {
   Validation
 } from './signup-controller-protocols'
 import { HttpRequest } from '../../protocols'
-import { badRequest } from '../../helpers/http/http-helper'
+import { badRequest, serverError } from '../../helpers/http/http-helper'
 import { DuplicatedEmailError } from '../../../domain/errors/account/duplicated-email-error'
 import { Authentication, AuthenticationParams } from '../login/login-controller-protocols'
 
@@ -169,5 +169,14 @@ describe('SignUp Controller', () => {
       email: 'email@email.com',
       password: 'password'
     })
+  })
+
+  test('should return 500 if Authentication throws', async () => {
+    const { sut, authenticationStub } = makeSut()
+    jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(
+      new Promise((resolve, reject) => reject(new Error()))
+    )
+    const httpResponse = await sut.handle(makeFakeRequest())
+    expect(httpResponse).toEqual(serverError(new Error()))
   })
 })
