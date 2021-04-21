@@ -29,21 +29,6 @@ describe('Login Routes', () => {
         passwordConfirmation: 'anypassword'
       }).expect(200)
     })
-
-    test('should return 400 on signup duplicated email', async () => {
-      const password = await hash('anypassword', 12)
-      await accountsCollection.insertOne({
-        name: 'any_name',
-        email: 'anyemail@gmail.com',
-        password
-      })
-      await request(app).post('/api/signup').send({
-        name: 'any_name',
-        email: 'anyemail@gmail.com',
-        password: 'anypassword',
-        passwordConfirmation: 'anypassword'
-      }).expect(400)
-    })
   })
 
   describe('POST /login', () => {

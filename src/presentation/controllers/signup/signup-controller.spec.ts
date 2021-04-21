@@ -1,6 +1,6 @@
 import { SignUpController } from './signup-controller'
 
-import { MissingParamError, ServerError } from '../../errors'
+import { MissingParamError, ServerError, EmailInUseError } from '../../errors'
 import {
   AddAccount,
   AddAccountModel,
@@ -8,8 +8,7 @@ import {
   Validation
 } from './signup-controller-protocols'
 import { HttpRequest } from '../../protocols'
-import { badRequest, serverError } from '../../helpers/http/http-helper'
-import { DuplicatedEmailError } from '../../../domain/errors/account/duplicated-email-error'
+import { badRequest, serverError, forbidden } from '../../helpers/http/http-helper'
 import { Authentication, AuthenticationParams } from '../login/login-controller-protocols'
 
 const DEFAULT_TOKEN_STUB = 'any_token'
@@ -153,14 +152,11 @@ describe('SignUp Controller', () => {
     expect(httpResponse).toEqual(badRequest(new MissingParamError('any_field')))
   })
 
-  test('should return 400 if AddAccount throws ErrorDuplicatedEmail', async () => {
+  test('should return 403 if AddAccount returns null', async () => {
     const { sut, addAccountStub } = makeSut()
-    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(async () => {
-      return await new Promise((resolve, reject) => reject(new DuplicatedEmailError()))
-    })
+    jest.spyOn(addAccountStub, 'add').mockReturnValueOnce(Promise.resolve(null))
     const httpResponse = await sut.handle(makeFakeRequest())
-    expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new DuplicatedEmailError())
+    expect(httpResponse).toEqual(forbidden(new EmailInUseError()))
   })
 
   test('should call Authentication with correct values', async () => {
