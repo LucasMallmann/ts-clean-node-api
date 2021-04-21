@@ -119,5 +119,6 @@ dist
 dist
 
 data
+!src/data
 
 globalConfig.json
