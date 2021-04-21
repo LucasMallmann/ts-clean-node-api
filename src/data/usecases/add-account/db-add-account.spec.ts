@@ -94,7 +94,6 @@ describe('DbAddAccount Usecase', () => {
 
   test('should throw if Hasher throws', async () => {
     const { hasherStub, sut } = makeSut()
-    // Mocking a dependency to throw an exception
     jest.spyOn(hasherStub, 'hash').mockReturnValueOnce(
       new Promise((resolve, reject) => reject(new Error()))
     )
@@ -147,6 +146,20 @@ describe('DbAddAccount Usecase', () => {
     const loadSpy = jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
     await sut.add(accountData)
     expect(loadSpy).toHaveBeenLastCalledWith(accountData.email)
+  })
+
+  test('should throw if LoadAccountByEmailRepository throws', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut()
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email@email.com',
+      password: 'valid_password'
+    }
+    jest.spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(
+      new Promise((resolve, reject) => reject(new Error()))
+    )
+    const authPromise = sut.add(accountData)
+    await expect(authPromise).rejects.toThrow()
   })
 
   test('should return an account on success', async () => {
