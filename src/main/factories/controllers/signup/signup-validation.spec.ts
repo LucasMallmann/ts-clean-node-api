@@ -1,12 +1,11 @@
-import { CompareFieldsValidation } from '../../../../presentation/helpers/validators/compare-fields-validation'
-import { EmailValidation } from '../../../../presentation/helpers/validators/email-validation'
-import { RequiredFieldValidation } from '../../../../presentation/helpers/validators/required-field-validation'
 import { Validation } from '../../../../presentation/protocols/validation'
-import { ValidationComposite } from '../../../../presentation/helpers/validators/validation-composite'
+import { ValidationComposite } from '../../../../validation/validators/validation-composite'
 import { makeSignUpValidation } from './signup-validation-factory'
-import { EmailValidatorAdapter } from '../../../adapters/validators/email-validator-adapter'
 
-jest.mock('../../../../presentation/helpers/validators/validation-composite')
+import { CompareFieldsValidation, EmailValidation, RequiredFieldValidation } from '../../../../validation/validators'
+import { EmailValidatorAdapter } from '../../../../infra/validators/email-validator-adapter'
+
+jest.mock('../../../../validation/validators/validation-composite')
 
 describe('SignUp Validation Factory', () => {
   test('should call ValidationComposite with all validation', () => {
