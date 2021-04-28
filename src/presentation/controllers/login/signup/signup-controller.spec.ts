@@ -1,14 +1,14 @@
 import { SignUpController } from './signup-controller'
 
-import { MissingParamError, ServerError, EmailInUseError } from '../../errors'
+import { MissingParamError, ServerError, EmailInUseError } from '../../../errors'
 import {
   AddAccount,
   AddAccountModel,
   AccountModel,
   Validation
 } from './signup-controller-protocols'
-import { HttpRequest } from '../../protocols'
-import { badRequest, serverError, forbidden } from '../../helpers/http/http-helper'
+import { HttpRequest } from '../../../protocols'
+import { badRequest, serverError, forbidden } from '../../../helpers/http/http-helper'
 import { Authentication, AuthenticationParams } from '../login/login-controller-protocols'
 
 const DEFAULT_TOKEN_STUB = 'any_token'

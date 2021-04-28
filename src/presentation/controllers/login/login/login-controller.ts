@@ -1,5 +1,5 @@
-import { ServerError } from '../../errors'
-import { badRequest, ok, serverError, unauthorized } from '../../helpers/http/http-helper'
+import { ServerError } from '../../../errors'
+import { badRequest, ok, serverError, unauthorized } from '../../../helpers/http/http-helper'
 import {
   Controller,
   HttpRequest,
