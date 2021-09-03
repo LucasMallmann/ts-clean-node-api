@@ -38,7 +38,18 @@ export class AccountMongoRepository implements
 
   async loadByToken (token: string, role?: string | undefined): Promise<AccountModel> {
     const accountCollection = await MongoHelper.getCollection('accounts')
-    const account = await accountCollection.findOne({ accessToken: token, role })
-    return MongoHelper.withId(account)
+    const account = await accountCollection.findOne(
+      {
+        accessToken: token,
+        $or: [
+          { role },
+          { role: 'admin' }
+        ]
+      }
+    )
+    if (account) {
+      return MongoHelper.withId(account)
+    }
+    return null as unknown as AccountModel
   }
 }
