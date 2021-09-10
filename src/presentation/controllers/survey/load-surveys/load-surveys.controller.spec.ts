@@ -2,7 +2,8 @@ import {
   SurveyModel,
   LoadSurveys,
   ok,
-  serverError
+  serverError,
+  noContent
 } from './load-surveys-protocols'
 import { LoadSurveysController } from './load-surveys-controller'
 
@@ -77,5 +78,14 @@ describe('LoadSurveys Controller', () => {
     const { sut } = makeSut()
     const httpResponse = await sut.handle({})
     expect(httpResponse).toEqual(ok(makeFakeSurveys()))
+  })
+
+  test('should return 204 if LoadSurveys return empty', async () => {
+    const { sut, loadSurveysStub } = makeSut()
+    jest.spyOn(loadSurveysStub, 'load').mockReturnValueOnce(
+      Promise.resolve([])
+    )
+    const httpResponse = await sut.handle({})
+    expect(httpResponse).toEqual(noContent())
   })
 })
