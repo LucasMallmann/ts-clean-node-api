@@ -81,39 +81,26 @@ describe('Survey Routes', () => {
       await request(app).get('/api/surveys').expect(403)
     })
 
-    // test('should return 204 on add survey with valid token', async () => {
-    //   const res = await accountsCollection.insertOne({
-    //     name: 'any_name',
-    //     email: 'anyemail@gmail.com',
-    //     password: 'any_password',
-    //     role: 'admin'
-    //   })
+    test('should return 204 on load surveys with valid valid accessToken', async () => {
+      const res = await accountsCollection.insertOne({
+        name: 'any_name',
+        email: 'anyemail@gmail.com',
+        password: 'any_password'
+      })
 
-    //   const id = res.ops[0]._id
-    //   const accessToken = sign({ id }, env.jwtSecret)
+      const id = res.ops[0]._id
+      const accessToken = sign({ id }, env.jwtSecret)
 
-    //   await accountsCollection.updateOne({ _id: id }, {
-    //     $set: {
-    //       accessToken
-    //     }
-    //   })
+      await accountsCollection.updateOne({ _id: id }, {
+        $set: {
+          accessToken
+        }
+      })
 
-    //   await request(app)
-    //     .post('/api/surveys').set({
-    //       'x-access-token': accessToken
-    //     })
-    //     .send({
-    //       question: 'question',
-    //       answers: [
-    //         {
-    //           answer: 'answer_1',
-    //           image: 'http://image-name.com'
-    //         },
-    //         {
-    //           answer: 'answer_2'
-    //         }
-    //       ]
-    //     }).expect(204)
-    // })
+      await request(app)
+        .get('/api/surveys').set({
+          'x-access-token': accessToken
+        }).expect(204)
+    })
   })
 })
