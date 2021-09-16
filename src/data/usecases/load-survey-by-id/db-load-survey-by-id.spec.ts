@@ -5,7 +5,7 @@ import { LoadSurveyByIdRepository } from '@/data/protocols/db/survey/load-survey
 import { DbLoadSurveyById } from './db-load-survey-by-id'
 import Mockdate from 'mockdate'
 
-const makeFakeSurveys = (): SurveyModel => {
+const makeFakeSurvey = (): SurveyModel => {
   return {
     id: 'other_id',
     question: 'other_question',
@@ -19,13 +19,13 @@ const makeFakeSurveys = (): SurveyModel => {
 
 type SutTypes = {
   sut: DbLoadSurveyById
-  loadSurveysRepositoryStub: LoadSurveyByIdRepository
+  loadSurveyByIdRepositoryStub: LoadSurveyByIdRepository
 }
 
 const makeLoadSurveyByIdRepositoryStub = (): LoadSurveyByIdRepository => {
   class LoadSurveysRepositoryStub implements LoadSurveyByIdRepository {
     async loadById (id: string): Promise<SurveyModel> {
-      return makeFakeSurveys()
+      return makeFakeSurvey()
     }
   }
 
@@ -37,7 +37,7 @@ const makeSut = (): SutTypes => {
   const sut = new DbLoadSurveyById(loadSurveysRepositoryStub)
   return {
     sut,
-    loadSurveysRepositoryStub
+    loadSurveyByIdRepositoryStub: loadSurveysRepositoryStub
   }
 }
 
@@ -51,9 +51,24 @@ describe('DbLoadSurveyById', () => {
   })
 
   test('should call loadSurveyByIdRepository with correct valuye', async () => {
-    const { sut, loadSurveysRepositoryStub } = makeSut()
-    const loadByIdSpy = jest.spyOn(loadSurveysRepositoryStub, 'loadById')
+    const { sut, loadSurveyByIdRepositoryStub } = makeSut()
+    const loadByIdSpy = jest.spyOn(loadSurveyByIdRepositoryStub, 'loadById')
     await sut.loadById('any_id')
     expect(loadByIdSpy).toHaveBeenCalledWith('any_id')
+  })
+
+  test('should return Survey on success', async () => {
+    const { sut } = makeSut()
+    const survey = await sut.loadById('any_id')
+    expect(survey).toEqual(makeFakeSurvey())
+  })
+
+  test('should throw if LoadSurveyById throws', async () => {
+    const { sut, loadSurveyByIdRepositoryStub } = makeSut()
+    jest.spyOn(loadSurveyByIdRepositoryStub, 'loadById').mockReturnValueOnce(
+      new Promise((resolve, reject) => reject(new Error()))
+    )
+    const surveyPromise = sut.loadById('any_id')
+    await expect(surveyPromise).rejects.toThrow()
   })
 })
